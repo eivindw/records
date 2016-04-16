@@ -1,13 +1,10 @@
 package com.github.hansolaf.records;
 
-import com.github.krukow.clj_lang.APersistentMap;
-import com.github.krukow.clj_lang.IPersistentMap;
-import com.github.krukow.clj_lang.PersistentHashMap;
+import org.pcollections.HashPMap;
+import org.pcollections.HashTreePMap;
+import org.pcollections.PMap;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -16,22 +13,33 @@ public class Rec<T> implements
         Function<Key<?>, Object>,
         Iterable<Map.Entry<Key<?>, Object>> {
 
-    private final APersistentMap<Key<?>, Object> map;
+    private final PMap<Key<?>, Object> map;
 
     public Rec() {
-        this(PersistentHashMap.emptyMap());
+        this(HashTreePMap.empty());
     }
 
-    public Rec(APersistentMap<Key<?>, Object> map) {
+    public Rec(PMap<Key<?>, Object> map) {
         this.map = map;
     }
 
     public Rec(Map<Key<?>, Object> map) {
-        this(PersistentHashMap.create(map));
+        this(HashTreePMap.from(map));
     }
 
     public Rec(Object... keysAndVals) {
-        this(PersistentHashMap.create(keysAndVals));
+        this(createPMap(keysAndVals));
+    }
+
+    private static PMap<Key<?>, Object> createPMap(Object... keysAndVals) {
+        HashPMap<Key<?>, Object> pMap = HashTreePMap.empty();
+        for (int i = 0; i < keysAndVals.length; i += 2) {
+            Key key = (Key) keysAndVals[i];
+            Object value = keysAndVals[i + 1];
+
+            pMap = pMap.plus(key, value);
+        }
+        return pMap;
     }
 
     public static <X> Rec<X> create(Object... keysAndVals) {
@@ -44,31 +52,26 @@ public class Rec<T> implements
      * Returns a new Rec of the same type with 'key' associated to 'value'
      */
     public <A> Rec<T> with(Key<A> key, A value) {
-        return new Rec<>((APersistentMap<Key<?>, Object>) map.assoc(key, value));
+        return new Rec<>(map.plus(key, value));
     }
 
     /**
      * Returns a new Rec without mappings for the specified 'keys'
      */
     public Rec<T> without(Key<?>... keys) {
-        IPersistentMap<Key<?>, Object> res = map;
-        for (Key<?> key : keys) {
-            if (containsKey(key))
-                res = res.without(key);
-        }
-        return new Rec<>((APersistentMap<Key<?>, Object>) res);
+        return new Rec<>(map.minusAll(Arrays.asList(keys)));
     }
 
     /**
      * Returns a new Rec with only the mappings specified by 'keys'
      */
     public Rec<T> selectKeys(Key<?>... keys) {
-        IPersistentMap<Key<?>, Object> res = PersistentHashMap.emptyMap();
+        PMap<Key<?>, Object> res = HashTreePMap.empty();
         for (Key<?> key : keys) {
             if (containsKey(key))
-                res = res.assoc(key, get(key));
+                res = res.plus(key, get(key));
         }
-        return new Rec<>((APersistentMap<Key<?>, Object>) res);
+        return new Rec<>(res);
     }
 
     /**

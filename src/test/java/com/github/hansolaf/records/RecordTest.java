@@ -19,9 +19,9 @@ public class RecordTest {
         Key<Double> price = Key.create("price");
     }
 
-    private Rec<Thing> a1 = new Rec<Thing>(name, "Some", price, 24.4d);
+    private Rec<Thing> a1 = new Rec<>(name, "Some", price, 24.4d);
     private Rec<Thing> a2 = Rec.create(name, "Some", price, 24.4d);
-    private Rec<Thing> b = new Rec<Thing>(name, "Other", price, 21.0d);
+    private Rec<Thing> b = new Rec<>(name, "Other", price, 21.0d);
 
     @Test
     public void supportEquals() {
@@ -53,7 +53,7 @@ public class RecordTest {
         map.put(name, "S");
         map.put(price, 1d);
         Rec<Thing> s1 = new Rec<>(map);
-        Rec<Thing> s2 = new Rec<Thing>(name, "S", price, 1d);
+        Rec<Thing> s2 = new Rec<>(name, "S", price, 1d);
         Rec<Thing> s3 = new Rec<Thing>().with(name, "S").with(price, 1d);
 
         assertEquals(1, new HashSet<>(Arrays.asList(s1, s2, s3)).size());
