@@ -1,10 +1,12 @@
-#Records
+# Records
 
 Persistent, type safe, heterogeneous maps.
 
-Depends on [https://github.com/krukow/clj-ds](https://github.com/krukow/clj-ds) for persistent collections.
+Depends on [http://pcollections.org/](http://pcollections.org/) for persistent collections.
 
-##Usage
+Forked from [https://github.com/hansolaf/records](https://github.com/hansolaf/records) to change backing library.
+
+## Usage
 
 ```java
 // Specifying a datastructure
@@ -27,19 +29,17 @@ System.out.println(thing.equals(sameThing)); // Prints 'true'
 
 For more examples see RecordTest.
 
-##Motivation
+## Motivation
 
 This library is an attempt to make working with data structures in Java easier. This style of programming is heavily influenced by Clojure. It encourages the separation of data structures and functions that operate on them, and treats immutability as the default.
 
-####Code reuse
+#### Code reuse
 Normally, every class has to define constructors, accessors, hashCode, equals, toString, etc. This doesn't just require you to implement and maintain lots of code, but it leaves room for mistakes and differences in behaviour. By defining the way objects are constructed, printed, compared and accessed *once*, all records behave the same.
 
-Records implement java.util.Map, so every function that work on maps, also work on records. In addition, they allow you to either stream or iterate over their map entries. Records are functions of their keys, and a keys are functions of records.
+Records implement java.util.Map, so every function that work on maps, also work on records. In addition, they allow you to either stream or iterate over their map entries. Records are functions of their keys, and keys are functions of records.
 
-####Immutability
-Although Java allows marking variables as final, it doesn't solve the problem of composite immutable objects. Records use Clojure's persistent data structures (via krukow's port clj-ds) as a backing data structure to achieve fast and immutable composite objects. 
+#### Immutability
+Although Java allows marking variables as final, it doesn't solve the problem of composite immutable objects. Records use persistent data structures as a backing data structure to achieve fast and immutable composite objects.
 
-If you for some reason need a mutable record, you can convert records back and forth via the asMutable() and asImmutable() methods.
-
-##Runtime type safety
+## Runtime type safety
 At the moment, records provide no runtime guarantees for its contents. Just like any of the java collections, if you cast it to its raw type you can insert anything and it will only fail with a ClassCastException when you try to get data out of it expecting a certain type. 
